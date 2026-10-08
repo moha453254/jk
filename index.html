@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-100 text-slate-800">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JOD Cashier Mental Math Speed Trainer</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Tailwind Configuration Script -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Chakra Petch', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              900: '#064e3b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full flex flex-col font-sans antialiased text-slate-800 bg-slate-50 select-none overflow-x-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-gradient-to-r from-emerald-700 via-teal-700 to-cyan-800 text-white shadow-lg px-4 py-3 shrink-0">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/30 backdrop-blur flex items-center justify-center font-bold font-display text-xl text-amber-300 shadow-sm">
+          JD
+        </div>
+        <div>
+          <h1 class="font-display font-bold text-lg leading-tight tracking-wide">JOD Cashier Speed Trainer</h1>
+          <p class="text-xs text-emerald-100/90 font-medium">Mental Calculation & Rapid Cash Handling</p>
+        </div>
+      </div>
+
+      <!-- Quick Stats Top Bar -->
+      <div class="flex items-center gap-4 text-xs font-mono bg-slate-900/40 backdrop-blur px-4 py-2 rounded-xl border border-white/15 shadow-inner text-white">
+        <div class="flex items-center gap-1.5">
+          <span class="text-emerald-200">Streak:</span>
+          <span id="header-streak" class="text-amber-300 font-bold">0 🔥</span>
+        </div>
+        <div class="w-px h-4 bg-white/20"></div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-emerald-200">Avg Speed:</span>
+          <span id="header-avg-time" class="text-teal-200 font-bold">0.0s</span>
+        </div>
+        <div class="w-px h-4 bg-white/20"></div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-emerald-200">Handled:</span>
+          <span id="header-total-cash" class="text-cyan-200 font-bold">0.000 JD</span>
+        </div>
+      </div>
+
+      <!-- Sound & Settings Buttons -->
+      <div class="flex items-center space-x-2">
+        <button id="audio-toggle-btn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition border border-white/20 shadow-sm">
+          <span id="audio-icon">🔊</span> Sound ON
+        </button>
+        <button onclick="openModal('hints-modal')" class="px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold flex items-center gap-1.5 transition shadow-md">
+          💡 Pro Cashier Tricks
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-auto">
+
+    <!-- LEFT COLUMN: Control Panel & Mode Select (4 cols) -->
+    <section class="lg:col-span-4 flex flex-col gap-4">
+      
+      <!-- Mode Selection Card -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <h2 class="text-xs uppercase tracking-wider font-bold text-slate-500 mb-3 flex items-center gap-2">
+          <span>🎯</span> Select Training Stage
+        </h2>
+        
+        <div class="space-y-2">
+          <!-- Stage 1 -->
+          <button onclick="setStage(1)" id="stage-btn-1" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 transition flex items-center justify-between group">
+            <div>
+              <div class="text-sm font-bold text-slate-800 group-hover:text-emerald-700">Stage 1: Whole JOD</div>
+              <div class="text-xs text-slate-500">Exact Dinars (e.g. Price: 14 JD, Paid: 20 JD)</div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-1 bg-emerald-100 text-emerald-800 rounded-md border border-emerald-300">Easy</span>
+          </button>
+
+          <!-- Stage 2 -->
+          <button onclick="setStage(2)" id="stage-btn-2" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 transition flex items-center justify-between group">
+            <div>
+              <div class="text-sm font-bold text-slate-800 group-hover:text-emerald-700">Stage 2: JD + Fils</div>
+              <div class="text-xs text-slate-500">Fils sub-units (e.g. Price: 7.35 JD, Paid: 10 JD)</div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-1 bg-sky-100 text-sky-800 rounded-md border border-sky-300">Medium</span>
+          </button>
+
+          <!-- Stage 3 -->
+          <button onclick="setStage(3)" id="stage-btn-3" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 transition flex items-center justify-between group">
+            <div>
+              <div class="text-sm font-bold text-slate-800 group-hover:text-emerald-700">Stage 3: Awkward Cash / Rush</div>
+              <div class="text-xs text-slate-500">Smart customers (e.g. 7.35 JD paid with 10.35 JD)</div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-1 bg-amber-100 text-amber-800 rounded-md border border-amber-300">Hard</span>
+          </button>
+
+          <!-- Stage 4 -->
+          <button onclick="setStage(4)" id="stage-btn-4" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 transition flex items-center justify-between group">
+            <div>
+              <div class="text-sm font-bold text-slate-800 group-hover:text-emerald-700">Stage 4: Multi-Item POS Sum</div>
+              <div class="text-xs text-slate-500">Sum 2-4 items first, then solve change</div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-1 bg-purple-100 text-purple-800 rounded-md border border-purple-300">Pro</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode & Input Settings Panel -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+        <h2 class="text-xs uppercase tracking-wider font-bold text-slate-500 flex items-center gap-2">
+          <span>⚙️</span> Interactive Options
+        </h2>
+
+        <!-- Input Mode Switcher -->
+        <div>
+          <label class="text-xs text-slate-500 font-medium block mb-1.5">Input Method</label>
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl border border-slate-200">
+            <button onclick="setInputMode('numpad')" id="input-mode-numpad" class="py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow">
+              ⌨️ Numpad / Keys
+            </button>
+            <button onclick="setInputMode('drawer')" id="input-mode-drawer" class="py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900">
+              💵 Cash Drawer
+            </button>
+          </div>
+        </div>
+
+        <!-- Rush Timer Toggle -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+          <div>
+            <div class="text-xs font-bold text-slate-800">Timed Rush Mode (10s)</div>
+            <div class="text-[11px] text-slate-500">Simulate high register rush</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="timer-toggle" onchange="toggleTimedRush()" class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Session Analytics Mini-Card -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex-1 flex flex-col justify-between">
+        <h2 class="text-xs uppercase tracking-wider font-bold text-slate-500 mb-3 flex items-center gap-2">
+          <span>📊</span> Live Shift Metrics
+        </h2>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-emerald-800">Accuracy</div>
+            <div id="stat-accuracy" class="text-xl font-bold font-mono text-emerald-700">100%</div>
+            <div class="text-[10px] text-emerald-600 font-medium mt-0.5" id="stat-counts">0 / 0 correct</div>
+          </div>
+
+          <div class="bg-amber-50/60 p-3 rounded-xl border border-amber-100">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-amber-800">Best Speed</div>
+            <div id="stat-best-speed" class="text-xl font-bold font-mono text-amber-700">0.0s</div>
+            <div class="text-[10px] text-amber-600 font-medium mt-0.5 truncate" id="stat-badge">No Badge</div>
+          </div>
+        </div>
+
+        <button onclick="resetStats()" class="mt-4 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition border border-slate-300">
+          Reset Shift Statistics
+        </button>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: POS Workstation, Display & Interactive Cash Drawer (8 cols) -->
+    <section class="lg:col-span-8 flex flex-col gap-4">
+      
+      <!-- POS Main Display Screen -->
+      <div id="pos-screen" class="bg-white border border-slate-200 rounded-3xl p-5 md:p-6 shadow-md relative overflow-hidden transition-all duration-300 pos-screen-glow">
+        
+        <!-- Timer Bar -->
+        <div id="timer-bar-container" class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-4 hidden border border-slate-200">
+          <div id="timer-bar" class="bg-emerald-500 h-full w-full transition-all duration-100 ease-linear"></div>
+        </div>
+
+        <!-- Receipt Header / Context -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-4 border-b border-slate-200">
+          <div>
+            <span id="current-stage-badge" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-300">
+              Stage 1: Whole JOD
+            </span>
+            <h2 class="text-lg font-bold text-slate-900 mt-2 font-display flex items-center gap-2">
+              <span>🛒</span> Customer Register Transaction
+            </h2>
+          </div>
+
+          <!-- Speed Meter Widget -->
+          <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-medium">Time:</span>
+            <span id="live-timer" class="font-mono text-lg font-bold text-emerald-700">0.0s</span>
+            <span id="speed-rank" class="text-xs font-bold text-slate-600 px-2 py-0.5 rounded bg-slate-200">READY</span>
+          </div>
+        </div>
+
+        <!-- Simulated POS Receipt & Customer Cash -->
+        <div class="py-5 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          
+          <!-- Receipt Breakdown -->
+          <div class="bg-slate-900 text-slate-100 rounded-2xl p-4 border border-slate-800 shadow-xl font-mono relative">
+            <div class="text-[10px] uppercase tracking-widest text-slate-400 border-b border-slate-800 pb-2 mb-3 flex justify-between">
+              <span>REGISTER RECEIPT #049</span>
+              <span id="receipt-date">JOD CURRENCY</span>
+            </div>
+
+            <!-- Multi item tally list if Stage 4 -->
+            <div id="multi-item-container" class="space-y-1.5 mb-3 hidden text-xs border-b border-slate-800 pb-3">
+              <!-- Dynamically populated for stage 4 -->
+            </div>
+
+            <!-- Total Price Row -->
+            <div class="flex justify-between items-baseline mb-2">
+              <span class="text-xs font-sans text-slate-300 font-semibold">TOTAL DUE:</span>
+              <span id="display-total-price" class="text-2xl font-bold text-white tracking-tight">0.000 JD</span>
+            </div>
+
+            <!-- Customer Cash Handed -->
+            <div class="flex justify-between items-baseline pt-2 border-t border-slate-800">
+              <span class="text-xs font-sans text-amber-400 font-bold">PAID CASH:</span>
+              <span id="display-paid-cash" class="text-2xl font-bold text-amber-400 tracking-tight">0.000 JD</span>
+            </div>
+
+            <!-- Customer Visual Bills Hint -->
+            <div class="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span>Bills Handed:</span>
+              <div id="customer-bills-visual" class="flex flex-wrap justify-end gap-1">
+                <!-- Dynamically rendered bill icons -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Prompt & Input Display -->
+          <div class="flex flex-col items-center justify-center text-center p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">CALCULATE CHANGE DUE</span>
+            
+            <!-- User Input Monitor Screen -->
+            <div class="w-full bg-white border-2 border-emerald-500 rounded-2xl py-3 px-4 my-2 shadow-sm text-center">
+              <div id="user-input-display" class="font-mono text-3xl font-extrabold text-emerald-600 tracking-wider min-h-[40px] flex items-center justify-center">
+                0.00
+              </div>
+            </div>
+
+            <div class="text-[11px] text-slate-500 font-medium mt-1" id="input-help-text">
+              Type exact change (or select coins/notes in drawer mode)
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Toast Feedback Banner -->
+        <div id="feedback-banner" class="mt-2 p-3.5 rounded-2xl border text-xs hidden transition-all shadow-md">
+          <div id="feedback-title" class="font-bold text-sm"></div>
+          <div id="feedback-detail" class="text-slate-700 font-medium mt-0.5"></div>
+        </div>
+
+        <!-- PERSISTENT CASHIER SUPERVISOR FEEDBACK CARD -->
+        <div id="persistent-trick-card" class="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 shadow-sm text-xs mt-3">
+          <div class="flex items-center justify-between border-b border-amber-200/80 pb-2 mb-2">
+            <div class="text-[11px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span>👨‍💼</span> Cashier Supervisor Feedback
+            </div>
+            <span id="last-shortcut-status" class="text-[10px] font-mono px-2 py-0.5 bg-amber-100 text-amber-800 font-semibold rounded-md border border-amber-300">
+              Awaiting first calculation...
+            </span>
+          </div>
+          <div id="persistent-trick-text" class="text-slate-800 font-medium leading-relaxed">
+            Solve your first transaction to receive live feedback and customized cashier mental math tricks from your supervisor!
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INPUT INTERFACE CONTROLS: NUMPAD -->
+      <div id="numpad-container" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+        <div class="grid grid-cols-4 gap-2.5 max-w-md mx-auto">
+          
+          <button onclick="pressNumpad('7')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">7</button>
+          <button onclick="pressNumpad('8')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">8</button>
+          <button onclick="pressNumpad('9')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">9</button>
+          <button onclick="pressNumpad('BACKSPACE')" class="btn-press-effect py-3.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-sm rounded-2xl border border-rose-300 shadow-sm">⌫ DEL</button>
+
+          <button onclick="pressNumpad('4')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">4</button>
+          <button onclick="pressNumpad('5')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">5</button>
+          <button onclick="pressNumpad('6')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">6</button>
+          <button onclick="pressNumpad('CLEAR')" class="btn-press-effect py-3.5 bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-sm rounded-2xl border border-amber-300 shadow-sm">C</button>
+
+          <button onclick="pressNumpad('1')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">1</button>
+          <button onclick="pressNumpad('2')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">2</button>
+          <button onclick="pressNumpad('3')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">3</button>
+          <button id="submit-btn-numpad" onclick="submitAnswer()" class="row-span-2 btn-press-effect py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg rounded-2xl border border-emerald-400 shadow-md flex flex-col items-center justify-center">
+            <span>✓</span>
+            <span class="text-xs uppercase tracking-wider">Submit</span>
+          </button>
+
+          <button onclick="pressNumpad('0')" class="col-span-2 btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">0</button>
+          <button onclick="pressNumpad('.')" class="btn-press-effect py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xl rounded-2xl border border-slate-300 shadow-sm">.</button>
+
+        </div>
+      </div>
+
+      <!-- VISUAL CASH DRAWER MODE CONTAINER -->
+      <div id="drawer-container" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hidden">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">💵 JOD Banknotes & Coins Drawer</span>
+          <button onclick="clearDrawerSelection()" class="text-xs text-rose-700 hover:text-rose-800 font-bold px-2.5 py-1 bg-rose-50 rounded-lg border border-rose-200">
+            Clear Selected Change
+          </button>
+        </div>
+
+        <!-- Banknotes Section -->
+        <div class="mb-4">
+          <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Paper Bills (JOD)</div>
+          <div class="grid grid-cols-5 gap-2">
+            <button onclick="addDrawerCurrency(50)" class="btn-press-effect p-2 rounded-xl bg-emerald-50 border-2 border-emerald-500 hover:bg-emerald-100 text-emerald-900 flex flex-col items-center shadow-sm">
+              <span class="font-bold font-mono text-sm">50 JD</span>
+              <span class="text-[9px] text-emerald-700 font-semibold">Green</span>
+            </button>
+            <button onclick="addDrawerCurrency(20)" class="btn-press-effect p-2 rounded-xl bg-sky-50 border-2 border-sky-500 hover:bg-sky-100 text-sky-900 flex flex-col items-center shadow-sm">
+              <span class="font-bold font-mono text-sm">20 JD</span>
+              <span class="text-[9px] text-sky-700 font-semibold">Blue</span>
+            </button>
+            <button onclick="addDrawerCurrency(10)" class="btn-press-effect p-2 rounded-xl bg-amber-50 border-2 border-amber-600 hover:bg-amber-100 text-amber-900 flex flex-col items-center shadow-sm">
+              <span class="font-bold font-mono text-sm">10 JD</span>
+              <span class="text-[9px] text-amber-700 font-semibold">Bronze</span>
+            </button>
+            <button onclick="addDrawerCurrency(5)" class="btn-press-effect p-2 rounded-xl bg-purple-50 border-2 border-purple-500 hover:bg-purple-100 text-purple-900 flex flex-col items-center shadow-sm">
+              <span class="font-bold font-mono text-sm">5 JD</span>
+              <span class="text-[9px] text-purple-700 font-semibold">Purple</span>
+            </button>
+            <button onclick="addDrawerCurrency(1)" class="btn-press-effect p-2 rounded-xl bg-stone-100 border-2 border-amber-700 hover:bg-stone-200 text-stone-900 flex flex-col items-center shadow-sm">
+              <span class="font-bold font-mono text-sm">1 JD</span>
+              <span class="text-[9px] text-amber-800 font-semibold">Note</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Coins Section -->
+        <div>
+          <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Sub-Dinar Coins (Fils)</div>
+          <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            <button onclick="addDrawerCurrency(0.50)" class="btn-press-effect p-2 rounded-xl bg-amber-50 border border-amber-400 hover:bg-amber-100 text-amber-900 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.50</span>
+              <span class="text-[9px] text-amber-700 font-semibold">½ JD</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.25)" class="btn-press-effect p-2 rounded-xl bg-amber-50 border border-amber-400 hover:bg-amber-100 text-amber-900 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.25</span>
+              <span class="text-[9px] text-amber-700 font-semibold">¼ JD</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.10)" class="btn-press-effect p-2 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-800 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.10</span>
+              <span class="text-[9px] text-slate-600 font-semibold">100 Fils</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.05)" class="btn-press-effect p-2 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-800 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.05</span>
+              <span class="text-[9px] text-slate-600 font-semibold">50 Fils</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.025)" class="btn-press-effect p-2 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-slate-800 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.025</span>
+              <span class="text-[9px] text-slate-600 font-semibold">25 Fils</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.010)" class="btn-press-effect p-2 rounded-xl bg-amber-100/60 border border-amber-300 hover:bg-amber-200 text-amber-900 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.010</span>
+              <span class="text-[9px] text-amber-800 font-semibold">10 Fils</span>
+            </button>
+            <button onclick="addDrawerCurrency(0.005)" class="btn-press-effect p-2 rounded-xl bg-amber-100/60 border border-amber-300 hover:bg-amber-200 text-amber-900 flex flex-col items-center">
+              <span class="font-bold font-mono text-xs">0.005</span>
+              <span class="text-[9px] text-amber-800 font-semibold">5 Fils</span>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="submitAnswer()" class="mt-4 w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl transition border border-emerald-400 shadow-md flex items-center justify-center gap-2">
+          <span>✓</span> Submit Drawer Total
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: Advanced Cashier Tricks & Mental Shortcuts -->
+  <div id="hints-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal('hints-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 p-2 text-lg font-bold">✕</button>
+      
+      <div class="flex items-center space-x-3 mb-5">
+        <div class="p-2.5 bg-amber-100 text-amber-800 rounded-xl text-2xl font-bold">💡</div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 font-display">Pro Cashier Mental Math Masterclass</h3>
+          <p class="text-xs text-slate-500">Essential strategies used by high-speed cash register professionals</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-700">
+        
+        <!-- Tip 1: Counting UP -->
+        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+          <h4 class="font-bold text-emerald-900 text-sm mb-1 flex items-center gap-1.5">
+            <span>1.</span> The "Count UP" Cashier Method
+          </h4>
+          <p class="mb-2 text-slate-600 leading-relaxed">
+            Never perform complex long subtraction in your head. Always <strong>add forward</strong> from the purchase price to the cash handed.
+          </p>
+          <div class="bg-white p-2.5 rounded-xl border border-emerald-200 font-mono text-[11px] text-slate-800">
+            <strong>Example:</strong> Price = 3.35 JD | Customer gives 10.00 JD<br>
+            • Step 1: Add <strong>0.65 JD</strong> to reach 4.00 JD<br>
+            • Step 2: Add <strong>6.00 JD</strong> to reach 10.00 JD<br>
+            • Result: Change is <strong>6.65 JD</strong>!
+          </div>
+        </div>
+
+        <!-- Tip 2: 1000 Fils Complement -->
+        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+          <h4 class="font-bold text-amber-900 text-sm mb-1 flex items-center gap-1.5">
+            <span>2.</span> The 1,000-Fils Complement Shortcut
+          </h4>
+          <p class="mb-2 text-slate-600 leading-relaxed">
+            To quickly calculate the fils part when subtracting from a clean dinar note:
+          </p>
+          <div class="bg-white p-2.5 rounded-xl border border-amber-200 font-mono text-[11px] text-slate-800">
+            Make the tens digit sum to <strong>9</strong> and the units digit sum to <strong>10</strong>.<br>
+            • Price has <strong>.35 JD</strong> fils?<br>
+            • (9 - 3) = 6 & (10 - 5) = 5 ➔ <strong>.65 JD</strong> fils change!<br>
+            • Then subtract 1 extra JD from the bill amount.
+          </div>
+        </div>
+
+        <!-- Tip 3: Handling Awkward Coins -->
+        <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200">
+          <h4 class="font-bold text-sky-900 text-sm mb-1 flex items-center gap-1.5">
+            <span>3.</span> Managing "Awkward Cash" Payments
+          </h4>
+          <p class="mb-2 text-slate-600 leading-relaxed">
+            Smart shoppers hand extra coins to get rounded bills back (e.g., giving 20.35 JD for a 7.35 JD bill).
+          </p>
+          <div class="bg-white p-2.5 rounded-xl border border-sky-200 font-mono text-[11px] text-slate-800">
+            • <strong>Matching Fils:</strong> Ignore the .35 on both sides! Simply calculate 20 - 7 = <strong>13.00 JD</strong>.<br>
+            • <strong>Extra Coins:</strong> If price is 7.85 JD and customer gives 10.35 JD, subtract .35 from both: 10.00 JD - 7.50 JD = <strong>2.50 JD</strong> change!
+          </div>
+        </div>
+
+        <!-- Tip 4: Physical Drawer Speed -->
+        <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200">
+          <h4 class="font-bold text-purple-900 text-sm mb-1 flex items-center gap-1.5">
+            <span>4.</span> Grouping Banknotes for Drawer Picking
+          </h4>
+          <p class="mb-2 text-slate-600 leading-relaxed">
+            Always count change starting with the <strong>largest possible banknote down to coins</strong> to minimize physical movements.
+          </p>
+          <div class="bg-white p-2.5 rounded-xl border border-purple-200 text-[11px] text-slate-800">
+            To give <strong>37.65 JD</strong> change:<br>
+            Pick 20 JD ➔ 10 JD ➔ 5 JD ➔ Two 1 JD notes ➔ ½ JD coin ➔ 100 Fils ➔ 50 Fils.
+          </div>
+        </div>
+
+      </div>
+
+      <button onclick="closeModal('hints-modal')" class="mt-6 w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md">
+        Got It! Back to Speed Register Training
+      </button>
+    </div>
+  </div>
+
+  <!-- Custom JavaScript File -->
+  <script src="jk.js"></script>
+</body>
+</html>

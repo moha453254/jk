@@ -1,0 +1,43 @@
+/* Custom Scrollbar & Interactive Visual Depth */
+::-webkit-scrollbar { 
+  width: 6px; 
+  height: 6px; 
+}
+
+::-webkit-scrollbar-track { 
+  background: #e2e8f0; 
+}
+
+::-webkit-scrollbar-thumb { 
+  background: #94a3b8; 
+  border-radius: 4px; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+  background: #64748b; 
+}
+
+.pos-screen-glow {
+  box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-press-effect {
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-press-effect:active {
+  transform: scale(0.96);
+}
+
+@keyframes pulse-success-bright {
+  0%, 100% { 
+    ring-color: rgba(16, 185, 129, 0.6); 
+  }
+  50% { 
+    ring-color: rgba(16, 185, 129, 1); 
+  }
+}
+
+.animate-success-ring {
+  animation: pulse-success-bright 0.3s ease-in-out 2;
+}
